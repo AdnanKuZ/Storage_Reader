@@ -15,6 +15,7 @@ class QRViewPage extends StatefulWidget {
 
 class _QRViewPageState extends State<QRViewPage> {
   Barcode? result;
+  bool firstTime = true;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
 
@@ -48,7 +49,8 @@ class _QRViewPageState extends State<QRViewPage> {
                     children: <Widget>[
                       Container(
                         margin: const EdgeInsets.all(8),
-                        child: ElevatedButton(style: ElevatedButton.styleFrom(
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.mainblue,
                             ),
                             onPressed: () async {
@@ -83,36 +85,6 @@ class _QRViewPageState extends State<QRViewPage> {
                                 }
                               },
                             )),
-                      )
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        margin: const EdgeInsets.all(8),
-                        child: ElevatedButton(style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.mainblue,
-                            ),
-                          onPressed: () async {
-                            await controller?.pauseCamera();
-                          },
-                          child: const Text('pause',
-                              style: TextStyle(fontSize: 20)),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(8),
-                        child: ElevatedButton(style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.mainblue,
-                            ),
-                          onPressed: () async {
-                            await controller?.resumeCamera();
-                          },
-                          child: const Text('resume',
-                              style: TextStyle(fontSize: 20)),
-                        ),
                       )
                     ],
                   ),
@@ -154,6 +126,10 @@ class _QRViewPageState extends State<QRViewPage> {
       setState(() {
         result = scanData;
       });
+      if(firstTime){
+        Navigator.pop(context,scanData.code);
+      }
+      firstTime = false;
     });
   }
 

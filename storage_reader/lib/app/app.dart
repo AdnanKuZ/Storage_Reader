@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:storage_reader/app/di.dart';
 import 'package:storage_reader/features/home/home_page.dart';
+import 'package:storage_reader/features/product/presentation/cubit/product_cubit.dart';
+import 'package:storage_reader/features/shop/presentation/cubit/shop_cubit.dart';
 
 class StorageGuardApp extends StatelessWidget {
   static Future<void> init() async {
@@ -24,10 +27,16 @@ class StorageGuardApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: const HomePage());
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => DI.di<ProductCubit>()),
+        BlocProvider(create: (_) => DI.di<ShopCubit>()),
+      ],
+      child: MaterialApp(
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: const HomePage()),
+    );
   }
 }
