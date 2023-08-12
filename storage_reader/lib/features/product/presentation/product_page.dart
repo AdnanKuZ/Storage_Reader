@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:storage_reader/app/constants/colors.dart';
 import 'package:storage_reader/app/constants/text_styles.dart';
 import 'package:storage_reader/app/extensions/date_time_helper.dart';
-import 'package:storage_reader/app/widgets/buttons/gradient_button.dart';
 import 'package:storage_reader/app/widgets/error_occurred_widget.dart';
 import 'package:storage_reader/app/widgets/title_appbar.dart';
 import 'package:storage_reader/app/widgets/loading_widget.dart';
@@ -46,7 +44,7 @@ class ProductPage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const TitleAppBar(withReturn: true),
-                              const SizedBox(height: 60),
+                              const SizedBox(height: 40),
                               const TitleDivider("Specifications"),
                               const SizedBox(height: 10),
                               Row(
@@ -144,29 +142,35 @@ class LogWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         isFirst ? const LineWidget() : const SizedBox.shrink(),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              operation.finishedAt?.formattedDateWithoutYear ?? "Running",
-              style:
-                  const TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 10),
-            Container(
-              height: 70,
-              width: 70,
-              decoration: BoxDecoration(
-                  border: Border.all(width: 2, color: AppColors.mainblue),
-                  borderRadius: BorderRadius.circular(25)),
-              child: Center(
-                  child: SizedBox(
-                      width: 40,
-                      child: Image.asset(operation.type == "storage"
-                          ? "assets/icons/warehouse_small.png"
-                          : "assets/icons/truck_small.png"))),
-            ),
-          ],
+        InkWell(
+          onTap: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => OperationPage(operation.id,)));
+          },
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                operation.finishedAt?.formattedDateWithoutYear ?? "Running",
+                style:
+                    const TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                height: 70,
+                width: 70,
+                decoration: BoxDecoration(
+                    border: Border.all(width: 2, color: AppColors.mainblue),
+                    borderRadius: BorderRadius.circular(25)),
+                child: Center(
+                    child: SizedBox(
+                        width: 40,
+                        child: Image.asset(operation.type == "storage"
+                            ? "assets/icons/warehouse_small.png"
+                            : "assets/icons/truck_small.png"))),
+              ),
+            ],
+          ),
         ),
         !isLast ? const LineWidget() : const SizedBox(width: 20)
       ],

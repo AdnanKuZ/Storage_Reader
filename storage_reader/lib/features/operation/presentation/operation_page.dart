@@ -8,21 +8,15 @@ import 'package:storage_reader/app/widgets/error_occurred_widget.dart';
 import 'package:storage_reader/app/widgets/loading_widget.dart';
 import 'package:storage_reader/app/widgets/title_appbar.dart';
 import 'package:storage_reader/app/widgets/title_divider.dart';
-import 'package:storage_reader/core/funcs.dart';
 import 'package:storage_reader/features/operation/data/models/operation_model.dart';
-import 'package:storage_reader/features/operation/data/operation_repositories.dart';
+import 'package:storage_reader/features/operation/data/models/sensor_reading_model.dart';
 import 'package:storage_reader/features/operation/presentation/cubit/get_operation_cubit.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class OperationPage extends StatefulWidget {
-  const OperationPage(this.operationId, this.data, {super.key});
+  const OperationPage(this.operationId, {super.key});
   final int operationId;
-  final Map<String, dynamic> data;
-  //data format is {
-  //   "last_temp": operation.lastTemp,
-  //   "last_humidity": operation.lastHumidity,
-  //   "avg_temp": operation.avgTemp,
-  //   "avg_humidity": operation.avgHumidity
-  // }
+
   @override
   State<OperationPage> createState() => _OperationPageState();
 }
@@ -113,82 +107,51 @@ class _OperationPageState extends State<OperationPage> {
                               ),
                             ],
                           ),
-                          // operation.sensorReadings != null
-                          //     ? SfCartesianChart(
-                          //         legend: Legend(
-                          //             isVisible: true,
-                          //             alignment: ChartAlignment.center,
-                          //             position: LegendPosition.bottom),
-                          //         title: ChartTitle(
-                          //             text: 'Sensor Data',
-                          //             textStyle: const TextStyle(fontSize: 12)),
-                          //         primaryXAxis: DateTimeAxis(),
-                          //         series: <ChartSeries>[
-                          //             // Renders line chart
-                          //             LineSeries<SensorReadingModel, DateTime>(
-                          //                 dataSource: operation.sensorReadings!,
-                          //                 enableTooltip: true,
-                          //                 dataLabelSettings:
-                          //                     const DataLabelSettings(
-                          //                         isVisible: true),
-                          //                 name: "Temp",
-                          //                 xValueMapper:
-                          //                     (SensorReadingModel point, _) =>
-                          //                         point.readAt,
-                          //                 yValueMapper:
-                          //                     (SensorReadingModel point, _) =>
-                          //                         point.temperature),
-                          //             LineSeries<SensorReadingModel, DateTime>(
-                          //                 name: "Humidity",
-                          //                 enableTooltip: true,
-                          //                 color: Colors.green,
-                          //                 dataLabelSettings:
-                          //                     const DataLabelSettings(
-                          //                         isVisible: true),
-                          //                 dataSource: operation.sensorReadings!,
-                          //                 xValueMapper:
-                          //                     (SensorReadingModel point, _) =>
-                          //                         point.readAt,
-                          //                 yValueMapper:
-                          //                     (SensorReadingModel point, _) =>
-                          //                         point.humidity)
-                          //           ])
-                          //     : const SizedBox.shrink(),
+                          operation.sensorReadings != null
+                              ? SfCartesianChart(
+                                  legend: Legend(
+                                      isVisible: true,
+                                      alignment: ChartAlignment.center,
+                                      position: LegendPosition.bottom),
+                                  title: ChartTitle(
+                                      text: 'Sensor Data',
+                                      textStyle: const TextStyle(fontSize: 12)),
+                                  primaryXAxis: DateTimeAxis(),
+                                  series: <ChartSeries>[
+                                      // Renders line chart
+                                      LineSeries<SensorReadingModel, DateTime>(
+                                          dataSource: operation.sensorReadings!,
+                                          enableTooltip: true,
+                                          dataLabelSettings:
+                                              const DataLabelSettings(
+                                                  isVisible: true),
+                                          name: "Temp",
+                                          xValueMapper:
+                                              (SensorReadingModel point, _) =>
+                                                  point.readAt,
+                                          yValueMapper:
+                                              (SensorReadingModel point, _) =>
+                                                  point.temperature),
+                                      LineSeries<SensorReadingModel, DateTime>(
+                                          name: "Humidity",
+                                          enableTooltip: true,
+                                          color: Colors.green,
+                                          dataLabelSettings:
+                                              const DataLabelSettings(
+                                                  isVisible: true),
+                                          dataSource: operation.sensorReadings!,
+                                          xValueMapper:
+                                              (SensorReadingModel point, _) =>
+                                                  point.readAt,
+                                          yValueMapper:
+                                              (SensorReadingModel point, _) =>
+                                                  point.humidity)
+                                    ])
+                              : const SizedBox.shrink(),
                           const SizedBox(
                             height: 10,
                           ),
-                          const Text(
-                            "Numeric values",
-                            style:
-                                TextStyle(color: Colors.black87, fontSize: 20),
-                          ),
-                          Divider(
-                            color: Colors.grey.shade400,
-                            thickness: 2,
-                            endIndent: 30,
-                          ),
-                          const SizedBox(height: 10),
-                          _TableSection(operation, widget.data),
-                          const SizedBox(height: 30),
-                          // Padding(
-                          //   padding: const EdgeInsets.symmetric(horizontal: 20),
-                          //   child: GradientButton(
-                          //     onPressed: () async {
-                          //       final either = await DI
-                          //           .di<OperationRepositories>()
-                          //           .endOperation(operation.id);
-                          //       either.fold((l) {
-                          //         Fluttertoast.showToast(msg: "Error: ${getErrorMessage(l)}");
-                          //       }, (r) {
-                          //         Fluttertoast.showToast(
-                          //             msg: "Ended Operation");
-                          //             BlocProvider.of<getAll.GetAllOperationsCubit>(context).getAllOperations();
-                          //       });
-                          //     },
-                          //     title: "End operation",
-                          //     withArrow: false,
-                          //   ),
-                          // ),
+                          _TableSection(operation),
                           const SizedBox(height: 40),
                         ],
                       );
@@ -222,93 +185,99 @@ class _OperationPageState extends State<OperationPage> {
 }
 
 class _TableSection extends StatelessWidget {
-  const _TableSection(this.operation, this.data);
+  const _TableSection(this.operation);
   final OperationModel operation;
-  final Map<String, dynamic> data;
 
   @override
   Widget build(BuildContext context) {
-    return Table(
-      border: TableBorder.symmetric(),
+    return Column(
       children: [
-        const TableRow(
-          decoration: BoxDecoration(border: Border.symmetric()),
-          children: [
-            TableCell(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 3, 0, 10),
-                child: Text(''),
-              ),
-            ),
-            TableCell(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 3, 0, 10),
-                child: Text('Last'),
-              ),
-            ),
-            TableCell(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 3, 0, 10),
-                child: Text('Avg'),
-              ),
-            ),
-          ],
+        const Text(
+          "Numeric values",
+          style: TextStyle(color: Colors.black87, fontSize: 20),
         ),
-        TableRow(
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            border: const Border(
-              top: BorderSide(width: 1, color: Colors.grey),
-              bottom: BorderSide(width: 1, color: Colors.grey),
-            ),
-          ),
-          children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-              child: TableCell(
-                child: Text('Temp'),
-              ),
-            ),
-            TableCell(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: Text(data["last_temp"].toString()),
-              ),
-            ),
-            TableCell(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: Text(data["last_humidity"].toString()),
-              ),
-            ),
-          ],
+        Divider(
+          color: Colors.grey.shade400,
+          thickness: 2,
+          endIndent: 30,
         ),
-        TableRow(
+        const SizedBox(height: 10),
+        Table(
+          border: TableBorder.symmetric(),
           children: [
-            const TableCell(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: Text('Humidity'),
-              ),
+            const TableRow(
+              decoration: BoxDecoration(border: Border.symmetric()),
+              children: [
+                TableCell(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(0, 3, 0, 10),
+                    child: Text(''),
+                  ),
+                ),
+                TableCell(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(0, 3, 0, 10),
+                    child: Text('Last'),
+                  ),
+                ),
+                TableCell(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(0, 3, 0, 10),
+                    child: Text('Avg'),
+                  ),
+                ),
+              ],
             ),
-            TableCell(
-                child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-              child: Text(data["avg_temp"].toString()),
-            )),
-            TableCell(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: Text(data["avg_humidity"].toString()),
+            TableRow(
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                border: const Border(
+                  top: BorderSide(width: 1, color: Colors.grey),
+                  bottom: BorderSide(width: 1, color: Colors.grey),
+                ),
               ),
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  child: TableCell(
+                    child: Text('Temp'),
+                  ),
+                ),
+                TableCell(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                    child: Text(operation.getLastFromReadings().toString()),
+                  ),
+                ),
+                TableCell(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                    child: Text(operation.getAvgFromReadings().toString()),
+                  ),
+                ),
+              ],
             ),
-            // TableCell(
-            //   child: Padding(
-            //     padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-            //     child: Text(
-            //         values.isEmpty ? "" : values[5].toString().substring(0, 4)),
-            //   ),
-            // ),
+            TableRow(
+              children: [
+                const TableCell(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                    child: Text('Humidity'),
+                  ),
+                ),
+                TableCell(
+                    child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  child: Text(operation.getLastFromReadings(isTemp: false).toString()),
+                )),
+                TableCell(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                    child: Text(operation.getAvgFromReadings(isTemp: false).toString()),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ],

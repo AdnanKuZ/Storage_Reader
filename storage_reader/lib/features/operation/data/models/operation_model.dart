@@ -68,7 +68,7 @@ class OperationModel {
         products: json["products"] == null
             ? null
             : List<ProductModel>.from(
-                json["products"].map((x) => ProductModel.fromJson(x,false))),
+                json["products"].map((x) => ProductModel.fromJson(x, false))),
         sensorReadings: json["sensor_readings"] == null
             ? null
             : List<SensorReadingModel>.from(json["sensor_readings"]
@@ -123,4 +123,30 @@ class OperationModel {
       lastHumidity != null &&
       avgTemp != null &&
       avgHumidity != null;
+  double getAvgFromReadings({bool isTemp = true}) {
+    if (sensorReadings == null||sensorReadings!.isEmpty) {
+      return 0.0;
+    }
+    int sum = 0;
+    if (isTemp) {
+      for (SensorReadingModel sensorReading in sensorReadings!) {
+        sum += sensorReading.temperature;
+      }
+      return sum / sensorReadings!.length;
+    } else {
+      for (SensorReadingModel sensorReading in sensorReadings!) {
+        sum += sensorReading.humidity;
+      }
+      return sum / sensorReadings!.length;
+    }
+  }
+
+  int getLastFromReadings({bool isTemp = true}) {
+    if (sensorReadings == null||sensorReadings!.isEmpty) {
+      return 0;
+    }
+    return isTemp
+        ? sensorReadings![sensorReadings!.length - 1].temperature
+        : sensorReadings![sensorReadings!.length - 1].humidity;
+  }
 }
