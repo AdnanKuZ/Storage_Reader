@@ -1,5 +1,8 @@
 import 'package:http/http.dart';
 import 'package:get_it/get_it.dart';
+import 'package:storage_reader/features/operation/data/operation_datasource.dart';
+import 'package:storage_reader/features/operation/data/operation_repositories.dart';
+import 'package:storage_reader/features/operation/presentation/cubit/get_operation_cubit.dart';
 import 'package:storage_reader/features/product/data/product_datasource.dart';
 import 'package:storage_reader/features/product/data/product_repositories.dart';
 import 'package:storage_reader/features/product/presentation/cubit/product_cubit.dart';
@@ -14,6 +17,7 @@ abstract class DI {
     di.registerLazySingleton<Client>(() => Client());
     registerProduct();
     registerShop();
+    registerOperation();
   }
 
   static void registerProduct() async {
@@ -31,5 +35,14 @@ abstract class DI {
     di.registerLazySingleton<ShopRepositories>(
         () => ShopRepositories(di<ShopDataSource>()));
     di.registerFactory<ShopCubit>(() => ShopCubit(di<ShopRepositories>()));
+  }
+
+  static void registerOperation() async {
+    di.registerLazySingleton<OperationDataSource>(
+        () => OperationDataSource(di<Client>()));
+    di.registerLazySingleton<OperationRepositories>(
+        () => OperationRepositories(di<OperationDataSource>()));
+    di.registerFactory<GetOperationCubit>(
+        () => GetOperationCubit(di<OperationRepositories>()));
   }
 }

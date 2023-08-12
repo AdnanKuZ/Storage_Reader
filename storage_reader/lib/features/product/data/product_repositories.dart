@@ -7,6 +7,6 @@ import 'package:storage_reader/features/product/data/product_model.dart';
 class ProductRepositories {
   ProductRepositories(this._productDataSource);
   final ProductDataSource _productDataSource;
-  Future<Either<Failure, ProductModel>> getProduct(String url) async =>
-      await repository(() => _productDataSource.getProduct(url));
+  Future<Either<Failure, ProductModel>> getProduct(int productId) async =>
+      await repository(() => _productDataSource.getProduct(productId));
 }

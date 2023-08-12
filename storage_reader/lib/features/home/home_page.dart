@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:storage_reader/app/constants/colors.dart';
 import 'package:storage_reader/app/widgets/button.dart';
 import 'package:storage_reader/app/widgets/title_appbar.dart';
@@ -35,14 +36,14 @@ class HomePage extends StatelessWidget {
                   decoration: BoxDecoration(
                       color: AppColors.lightGray,
                       borderRadius: BorderRadius.circular(18)),
-                  child: Column(
+                  child: const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         "Scan Qr Code",
                         style: TextStyle(color: Colors.black, fontSize: 20),
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
                       Text(
                         "Press the Scan button to start capturing QR codes",
                         style: TextStyle(color: Colors.black, fontSize: 16),
@@ -66,25 +67,32 @@ class HomePage extends StatelessWidget {
                           Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => QRViewPage()))
+                                      builder: (context) => const QRViewPage()))
                               .then((value) {
-                            if (value.contains("product")) {
-                              BlocProvider.of<ProductCubit>(context)
-                                  .getProduct(value);
+                                print("ValueIs:$value");
+                            if (value.contains("StorageGuard")) {
+                              if (value.contains("Product")) {
+                                BlocProvider.of<ProductCubit>(context)
+                                    .getProduct(int.parse(value.substring(
+                                        value.indexOf(":") + 1, value.length)));
 
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ProductPage()));
-                            }
-                            if (value.contains("shop")) {
-                              BlocProvider.of<ShopCubit>(context)
-                                  .getShop(value);
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ShopPage()));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ProductPage()));
+                              } else if (value.contains("user")) {
+                                BlocProvider.of<ShopCubit>(context)
+                                    .getShop(value);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ShopPage()));
+                              }
+                            } else {
+                              Fluttertoast.showToast(
+                                  msg: "This is not a storage guard QR Code");
                             }
                           });
                         },
