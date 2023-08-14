@@ -4,11 +4,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:storage_reader/app/constants/colors.dart';
 import 'package:storage_reader/app/widgets/button.dart';
 import 'package:storage_reader/app/widgets/title_appbar.dart';
-import 'package:storage_reader/features/product/data/product_model.dart';
 import 'package:storage_reader/features/product/presentation/cubit/product_cubit.dart';
 import 'package:storage_reader/features/product/presentation/product_page.dart';
 import 'package:storage_reader/features/qrcode/presentation/qrcode_page.dart';
-import 'package:storage_reader/features/shop/data/shop_model.dart';
 import 'package:storage_reader/features/shop/presentation/cubit/shop_cubit.dart';
 import 'package:storage_reader/features/shop/presentation/shop_page.dart';
 
@@ -27,12 +25,12 @@ class HomePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TitleAppBar(),
+                const TitleAppBar(),
                 const SizedBox(height: 60),
                 Container(
                   width: double.infinity,
                   height: 170,
-                  padding: EdgeInsets.all(22),
+                  padding: const EdgeInsets.all(22),
                   decoration: BoxDecoration(
                       color: AppColors.lightGray,
                       borderRadius: BorderRadius.circular(18)),
@@ -69,7 +67,7 @@ class HomePage extends StatelessWidget {
                                   MaterialPageRoute(
                                       builder: (context) => const QRViewPage()))
                               .then((value) {
-                                print("ValueIs:$value");
+                            print("ValueIs:$value");
                             if (value.contains("StorageGuard")) {
                               if (value.contains("Product")) {
                                 BlocProvider.of<ProductCubit>(context)
@@ -81,14 +79,18 @@ class HomePage extends StatelessWidget {
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             const ProductPage()));
-                              } else if (value.contains("user")) {
-                                BlocProvider.of<ShopCubit>(context)
-                                    .getShop(value);
+                              } else if (value.contains("User")) {
+                                BlocProvider.of<ShopCubit>(context).getShop(
+                                    int.parse(value.substring(
+                                        value.indexOf(":") + 1, value.length)));
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             const ShopPage()));
+                              } else {
+                                Fluttertoast.showToast(
+                                    msg: "This is not a storage guard QR Code");
                               }
                             } else {
                               Fluttertoast.showToast(
