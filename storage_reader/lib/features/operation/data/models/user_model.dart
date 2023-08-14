@@ -45,7 +45,7 @@ class User {
   int phone;
   String location;
   DateTime createdAt;
-  DateTime updatedAt;
+  DateTime? updatedAt;
 
   User({
     required this.id,
@@ -88,7 +88,7 @@ class User {
             json["phone"] is String ? int.parse(json["phone"]) : json["phone"],
         location: json["location"],
         createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
+        updatedAt:json["updated_at"]!=null? DateTime.parse(json["updated_at"]):null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -99,6 +99,6 @@ class User {
         "phone": phone,
         "location": location,
         "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
+        "updated_at": updatedAt?.toIso8601String(),
       };
 }
